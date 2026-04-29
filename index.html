@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Plan-Examiner – AI-powered building plan review and compliance assistant. Faster approvals, fewer revisions, full code compliance." />
+  <title>Plan-Examiner | Auto Building Plans Reviewer &amp; Compliance Assistant</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── Reset & base ────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --brand-primary: #1a56db;
+      --brand-dark:    #1e3a5f;
+      --brand-accent:  #f59e0b;
+      --text-base:     #1f2937;
+      --text-muted:    #6b7280;
+      --bg-light:      #f9fafb;
+      --bg-white:      #ffffff;
+      --radius:        12px;
+      --shadow:        0 4px 24px rgba(0,0,0,.08);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      color: var(--text-base);
+      background: var(--bg-white);
+      line-height: 1.6;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    img { display: block; max-width: 100%; }
+
+    /* ── Utility ─────────────────────────────────────────────────────── */
+    .container {
+      width: 100%;
+      max-width: 1120px;
+      margin-inline: auto;
+      padding-inline: 24px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      border: none;
+      transition: filter .2s, transform .15s;
+    }
+    .btn:hover  { filter: brightness(1.08); transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+
+    .btn-primary {
+      background: var(--brand-primary);
+      color: #fff;
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--brand-primary);
+      border: 2px solid var(--brand-primary);
+    }
+
+    .section-label {
+      display: inline-block;
+      font-size: .8rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--brand-primary);
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+      font-weight: 800;
+      line-height: 1.2;
+      color: var(--brand-dark);
+    }
+
+    .section-sub {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      margin-top: 12px;
+      max-width: 620px;
+    }
+
+    /* ── Navigation ──────────────────────────────────────────────────── */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255,255,255,.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .nav__inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 68px;
+    }
+
+    .nav__logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--brand-dark);
+    }
+
+    .nav__logo svg { flex-shrink: 0; }
+
+    .nav__links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav__links a {
+      font-size: .95rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      transition: color .2s;
+    }
+    .nav__links a:hover { color: var(--brand-primary); }
+
+    .nav__cta { display: flex; gap: 12px; align-items: center; }
+
+    @media (max-width: 768px) {
+      .nav__links, .nav__cta .btn-outline { display: none; }
+    }
+
+    /* ── Hero ────────────────────────────────────────────────────────── */
+    .hero {
+      background: linear-gradient(135deg, #eef2ff 0%, #f0f9ff 60%, #fff 100%);
+      padding: 96px 0 80px;
+      overflow: hidden;
+    }
+
+    .hero__inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+    }
+
+    @media (max-width: 860px) {
+      .hero__inner { grid-template-columns: 1fr; }
+      .hero__visual { display: none; }
+    }
+
+    .hero__badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #dbeafe;
+      color: var(--brand-primary);
+      font-size: .85rem;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 999px;
+      margin-bottom: 20px;
+    }
+
+    .hero__title {
+      font-size: clamp(2.2rem, 5vw, 3.4rem);
+      font-weight: 800;
+      line-height: 1.15;
+      color: var(--brand-dark);
+    }
+
+    .hero__title em {
+      font-style: normal;
+      color: var(--brand-primary);
+    }
+
+    .hero__sub {
+      margin-top: 20px;
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      max-width: 520px;
+    }
+
+    .hero__actions {
+      margin-top: 36px;
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .hero__stats {
+      margin-top: 48px;
+      display: flex;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+
+    .stat__value {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--brand-dark);
+    }
+
+    .stat__label {
+      font-size: .85rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* Hero visual – stylised plan card */
+    .hero__visual {
+      position: relative;
+    }
+
+    .plan-card {
+      background: var(--bg-white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 28px;
+      position: relative;
+    }
+
+    .plan-card__header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .plan-card__icon {
+      width: 44px;
+      height: 44px;
+      background: #dbeafe;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--brand-primary);
+    }
+
+    .plan-card__title { font-weight: 700; font-size: 1rem; }
+    .plan-card__meta  { font-size: .8rem; color: var(--text-muted); }
+
+    .checklist { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+
+    .checklist li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: .9rem;
+    }
+
+    .check-pass { color: #10b981; }
+    .check-warn { color: var(--brand-accent); }
+    .check-fail { color: #ef4444; }
+
+    .plan-card__score {
+      margin-top: 20px;
+      background: #f0fdf4;
+      border-radius: 8px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .score-label { font-size: .85rem; font-weight: 600; color: #065f46; }
+    .score-value { font-size: 1.5rem; font-weight: 800; color: #059669; }
+
+    .floating-badge {
+      position: absolute;
+      right: -20px;
+      top: -16px;
+      background: var(--brand-accent);
+      color: #fff;
+      font-size: .75rem;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 999px;
+      box-shadow: 0 4px 12px rgba(245,158,11,.35);
+    }
+
+    /* ── Logos / Social proof bar ─────────────────────────────────────── */
+    .logos {
+      padding: 40px 0;
+      border-bottom: 1px solid #f3f4f6;
+    }
+
+    .logos__label {
+      text-align: center;
+      font-size: .85rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+
+    .logos__row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 48px;
+      flex-wrap: wrap;
+    }
+
+    .logos__item {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #9ca3af;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    /* ── Features ────────────────────────────────────────────────────── */
+    .features {
+      padding: 96px 0;
+      background: var(--bg-white);
+    }
+
+    .features__head { text-align: center; }
+    .features__head .section-sub { margin-inline: auto; }
+
+    .features__grid {
+      margin-top: 56px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+    }
+
+    @media (max-width: 860px) {
+      .features__grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 540px) {
+      .features__grid { grid-template-columns: 1fr; }
+    }
+
+    .feature-card {
+      background: var(--bg-light);
+      border-radius: var(--radius);
+      padding: 32px 28px;
+      transition: box-shadow .2s, transform .2s;
+    }
+    .feature-card:hover {
+      box-shadow: var(--shadow);
+      transform: translateY(-3px);
+    }
+
+    .feature-card__icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      font-size: 1.4rem;
+    }
+
+    .icon-blue   { background: #dbeafe; }
+    .icon-green  { background: #d1fae5; }
+    .icon-amber  { background: #fef3c7; }
+    .icon-purple { background: #ede9fe; }
+    .icon-red    { background: #fee2e2; }
+    .icon-teal   { background: #ccfbf1; }
+
+    .feature-card__title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: var(--brand-dark);
+    }
+
+    .feature-card__desc { font-size: .92rem; color: var(--text-muted); }
+
+    /* ── How it works ─────────────────────────────────────────────────── */
+    .how {
+      padding: 96px 0;
+      background: var(--bg-light);
+    }
+
+    .how__head { text-align: center; }
+    .how__head .section-sub { margin-inline: auto; }
+
+    .steps {
+      margin-top: 64px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      position: relative;
+    }
+
+    .steps::before {
+      content: '';
+      position: absolute;
+      top: 32px;
+      left: calc(12.5% + 16px);
+      right: calc(12.5% + 16px);
+      height: 2px;
+      background: linear-gradient(90deg, var(--brand-primary), #93c5fd);
+      z-index: 0;
+    }
+
+    @media (max-width: 768px) {
+      .steps { grid-template-columns: 1fr 1fr; }
+      .steps::before { display: none; }
+    }
+
+    @media (max-width: 480px) {
+      .steps { grid-template-columns: 1fr; }
+    }
+
+    .step {
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .step__number {
+      width: 64px;
+      height: 64px;
+      background: var(--brand-primary);
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin: 0 auto 20px;
+      box-shadow: 0 4px 16px rgba(26,86,219,.35);
+    }
+
+    .step__title { font-weight: 700; font-size: 1rem; margin-bottom: 8px; color: var(--brand-dark); }
+    .step__desc  { font-size: .88rem; color: var(--text-muted); }
+
+    /* ── Benefits / comparison ───────────────────────────────────────── */
+    .benefits {
+      padding: 96px 0;
+      background: var(--bg-white);
+    }
+
+    .benefits__inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 72px;
+      align-items: center;
+    }
+
+    @media (max-width: 768px) {
+      .benefits__inner { grid-template-columns: 1fr; gap: 40px; }
+    }
+
+    .benefits__list { margin-top: 28px; display: flex; flex-direction: column; gap: 20px; }
+
+    .benefit {
+      display: flex;
+      gap: 16px;
+    }
+
+    .benefit__icon {
+      flex-shrink: 0;
+      width: 44px;
+      height: 44px;
+      background: #dbeafe;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--brand-primary);
+      font-size: 1.2rem;
+    }
+
+    .benefit__title { font-weight: 700; font-size: .95rem; margin-bottom: 4px; }
+    .benefit__desc  { font-size: .88rem; color: var(--text-muted); }
+
+    /* comparison table */
+    .compare-table {
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .compare-table table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .9rem;
+    }
+
+    .compare-table th {
+      background: var(--brand-dark);
+      color: #fff;
+      padding: 14px 20px;
+      text-align: left;
+    }
+
+    .compare-table th:not(:first-child) { text-align: center; }
+
+    .compare-table td {
+      padding: 12px 20px;
+      border-bottom: 1px solid #f3f4f6;
+      background: #fff;
+    }
+
+    .compare-table td:not(:first-child) { text-align: center; }
+
+    .compare-table tr:last-child td { border-bottom: none; }
+
+    .compare-table tr:nth-child(even) td { background: var(--bg-light); }
+
+    .tick  { color: #10b981; font-size: 1.1rem; }
+    .cross { color: #ef4444; font-size: 1.1rem; }
+
+    /* ── Testimonials ────────────────────────────────────────────────── */
+    .testimonials {
+      padding: 96px 0;
+      background: linear-gradient(135deg, #1e3a5f 0%, #1a56db 100%);
+      color: #fff;
+    }
+
+    .testimonials__head { text-align: center; }
+
+    .testimonials__head .section-title { color: #fff; }
+
+    .testimonials__head .section-sub { color: rgba(255,255,255,.75); margin-inline: auto; }
+
+    .testi-grid {
+      margin-top: 56px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    @media (max-width: 860px) {
+      .testi-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 540px) {
+      .testi-grid { grid-template-columns: 1fr; }
+    }
+
+    .testi-card {
+      background: rgba(255,255,255,.1);
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: var(--radius);
+      padding: 28px;
+      backdrop-filter: blur(8px);
+    }
+
+    .testi-card__stars {
+      color: var(--brand-accent);
+      font-size: 1.1rem;
+      margin-bottom: 14px;
+    }
+
+    .testi-card__quote {
+      font-size: .95rem;
+      line-height: 1.65;
+      color: rgba(255,255,255,.9);
+      margin-bottom: 20px;
+    }
+
+    .testi-card__author {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .testi-card__avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: .9rem;
+    }
+
+    .testi-card__name  { font-weight: 700; font-size: .9rem; }
+    .testi-card__role  { font-size: .8rem; color: rgba(255,255,255,.6); }
+
+    /* ── Pricing ─────────────────────────────────────────────────────── */
+    .pricing {
+      padding: 96px 0;
+      background: var(--bg-light);
+    }
+
+    .pricing__head { text-align: center; }
+    .pricing__head .section-sub { margin-inline: auto; }
+
+    .pricing__grid {
+      margin-top: 56px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      align-items: start;
+    }
+
+    @media (max-width: 768px) {
+      .pricing__grid { grid-template-columns: 1fr; max-width: 420px; margin-inline: auto; }
+    }
+
+    .price-card {
+      background: var(--bg-white);
+      border-radius: var(--radius);
+      padding: 36px 32px;
+      border: 2px solid #e5e7eb;
+      position: relative;
+      transition: box-shadow .2s;
+    }
+
+    .price-card:hover { box-shadow: var(--shadow); }
+
+    .price-card--featured {
+      border-color: var(--brand-primary);
+      box-shadow: 0 8px 32px rgba(26,86,219,.18);
+    }
+
+    .price-card__popular {
+      position: absolute;
+      top: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--brand-primary);
+      color: #fff;
+      font-size: .75rem;
+      font-weight: 700;
+      padding: 5px 16px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .price-card__tier  { font-size: .85rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--text-muted); }
+
+    .price-card__price {
+      margin-top: 12px;
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+    }
+
+    .price-card__amount { font-size: 2.8rem; font-weight: 800; color: var(--brand-dark); }
+    .price-card__period { font-size: .9rem; color: var(--text-muted); }
+
+    .price-card__desc { margin-top: 8px; font-size: .88rem; color: var(--text-muted); }
+
+    .price-card__divider { border: none; border-top: 1px solid #f3f4f6; margin: 24px 0; }
+
+    .price-card__features { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+
+    .price-card__features li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: .9rem;
+    }
+
+    .price-card__features .tick { font-size: 1rem; }
+
+    .price-card__cta { margin-top: 28px; width: 100%; justify-content: center; }
+
+    /* ── CTA Banner ──────────────────────────────────────────────────── */
+    .cta-banner {
+      padding: 80px 0;
+      background: var(--bg-white);
+      text-align: center;
+    }
+
+    .cta-banner__title {
+      font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+      font-weight: 800;
+      color: var(--brand-dark);
+    }
+
+    .cta-banner__sub {
+      margin-top: 16px;
+      font-size: 1.1rem;
+      color: var(--text-muted);
+    }
+
+    .cta-banner__actions {
+      margin-top: 36px;
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .cta-banner__note {
+      margin-top: 16px;
+      font-size: .82rem;
+      color: var(--text-muted);
+    }
+
+    /* ── Footer ──────────────────────────────────────────────────────── */
+    .footer {
+      background: var(--brand-dark);
+      color: rgba(255,255,255,.75);
+      padding: 60px 0 32px;
+    }
+
+    .footer__grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 40px;
+    }
+
+    @media (max-width: 768px) {
+      .footer__grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 480px) {
+      .footer__grid { grid-template-columns: 1fr; }
+    }
+
+    .footer__brand-name {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .footer__tagline { font-size: .88rem; line-height: 1.6; max-width: 260px; }
+
+    .footer__col-title {
+      font-size: .85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      color: rgba(255,255,255,.5);
+      margin-bottom: 16px;
+    }
+
+    .footer__links { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+
+    .footer__links a {
+      font-size: .9rem;
+      transition: color .2s;
+    }
+    .footer__links a:hover { color: #fff; }
+
+    .footer__bottom {
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255,255,255,.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: .82rem;
+    }
+
+    .footer__legal { display: flex; gap: 24px; flex-wrap: wrap; }
+    .footer__legal a:hover { color: #fff; }
+  </style>
+</head>
+<body>
+
+  <!-- ─── Navigation ─────────────────────────────────────────────────── -->
+  <nav class="nav" aria-label="Main navigation">
+    <div class="container nav__inner">
+      <a href="#" class="nav__logo" aria-label="Plan-Examiner home">
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none" aria-hidden="true">
+          <rect width="30" height="30" rx="8" fill="#1a56db"/>
+          <rect x="7" y="8" width="10" height="2" rx="1" fill="#fff"/>
+          <rect x="7" y="13" width="16" height="2" rx="1" fill="#fff"/>
+          <rect x="7" y="18" width="12" height="2" rx="1" fill="#fff"/>
+          <circle cx="23" cy="21" r="5" fill="#f59e0b"/>
+          <path d="M21 21l1.5 1.5L25 19.5" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Plan-Examiner
+      </a>
+
+      <ul class="nav__links">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#how-it-works">How it Works</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+        <li><a href="#testimonials">Testimonials</a></li>
+      </ul>
+
+      <div class="nav__cta">
+        <a href="#pricing" class="btn btn-outline">View Pricing</a>
+        <a href="#cta" class="btn btn-primary">Start Free Trial</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ─── Hero ───────────────────────────────────────────────────────── -->
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="container hero__inner">
+      <div>
+        <div class="hero__badge">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true"><path d="M7 0l1.5 4.5H13l-3.75 2.75L10.5 12 7 9.25 3.5 12l1.25-4.75L1 4.5h4.5z"/></svg>
+          AI-Powered Compliance Review
+        </div>
+
+        <h1 class="hero__title" id="hero-title">
+          Review Building Plans<br/><em>10× Faster</em> with AI
+        </h1>
+
+        <p class="hero__sub">
+          Plan-Examiner automatically checks architectural and engineering drawings against building codes, flags violations, and generates detailed compliance reports — in minutes, not days.
+        </p>
+
+        <div class="hero__actions">
+          <a href="#cta" class="btn btn-primary">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M9 2v14M2 9h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+            Start Free Trial
+          </a>
+          <a href="#how-it-works" class="btn btn-outline">See How It Works</a>
+        </div>
+
+        <div class="hero__stats">
+          <div>
+            <div class="stat__value">10×</div>
+            <div class="stat__label">Faster plan reviews</div>
+          </div>
+          <div>
+            <div class="stat__value">98%</div>
+            <div class="stat__label">Compliance accuracy</div>
+          </div>
+          <div>
+            <div class="stat__value">60%</div>
+            <div class="stat__label">Fewer revisions</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Illustrative plan review card -->
+      <div class="hero__visual" aria-hidden="true">
+        <div class="plan-card">
+          <div class="floating-badge">✓ AI Review Complete</div>
+
+          <div class="plan-card__header">
+            <div class="plan-card__icon">
+              <svg width="22" height="22" viewBox="0 0 22 22" fill="currentColor"><path d="M4 2h14a2 2 0 012 2v14a2 2 0 01-2 2H4a2 2 0 01-2-2V4a2 2 0 012-2zm2 4v2h10V6H6zm0 4v2h10v-2H6zm0 4v2h6v-2H6z"/></svg>
+            </div>
+            <div>
+              <div class="plan-card__title">Residential Plan – Unit 4B</div>
+              <div class="plan-card__meta">Submitted 2 min ago · IBC 2021</div>
+            </div>
+          </div>
+
+          <ul class="checklist">
+            <li><span class="check-pass">✔</span> Egress window dimensions — compliant</li>
+            <li><span class="check-pass">✔</span> Fire separation distances — compliant</li>
+            <li><span class="check-pass">✔</span> Stair tread / riser ratios — compliant</li>
+            <li><span class="check-warn">⚠</span> Accessible route width — review needed</li>
+            <li><span class="check-fail">✗</span> Occupancy load calculation — non-compliant</li>
+          </ul>
+
+          <div class="plan-card__score">
+            <span class="score-label">Overall Compliance Score</span>
+            <span class="score-value">82%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Logo bar ────────────────────────────────────────────────────── -->
+  <section class="logos" aria-label="Trusted by">
+    <div class="container">
+      <p class="logos__label">Trusted by plan review departments &amp; design firms</p>
+      <div class="logos__row">
+        <span class="logos__item">City of Springfield</span>
+        <span class="logos__item">Vertex Engineering</span>
+        <span class="logos__item">UrbanBuild Group</span>
+        <span class="logos__item">Cornerstone Architects</span>
+        <span class="logos__item">Pacific Permit Co.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Features ────────────────────────────────────────────────────── -->
+  <section class="features" id="features" aria-labelledby="features-title">
+    <div class="container">
+      <div class="features__head">
+        <span class="section-label">Features</span>
+        <h2 class="section-title" id="features-title">Everything you need for faster approvals</h2>
+        <p class="section-sub">Purpose-built for building departments, architects, and contractors who need accurate code compliance at scale.</p>
+      </div>
+
+      <div class="features__grid">
+        <article class="feature-card">
+          <div class="feature-card__icon icon-blue" aria-hidden="true">📐</div>
+          <h3 class="feature-card__title">Automated Code Checking</h3>
+          <p class="feature-card__desc">Cross-references plans against IBC, IRC, ADA, NFPA, and local amendments simultaneously — no manual lookup required.</p>
+        </article>
+
+        <article class="feature-card">
+          <div class="feature-card__icon icon-green" aria-hidden="true">📄</div>
+          <h3 class="feature-card__title">Instant Compliance Reports</h3>
+          <p class="feature-card__desc">Generates detailed, exportable PDF reports with flagged items, applicable code sections, and suggested corrections.</p>
+        </article>
+
+        <article class="feature-card">
+          <div class="feature-card__icon icon-amber" aria-hidden="true">⚡</div>
+          <h3 class="feature-card__title">Real-Time Feedback</h3>
+          <p class="feature-card__desc">Designers receive live compliance hints as they annotate drawings, catching issues before submission.</p>
+        </article>
+
+        <article class="feature-card">
+          <div class="feature-card__icon icon-purple" aria-hidden="true">🔄</div>
+          <h3 class="feature-card__title">Revision Tracking</h3>
+          <p class="feature-card__desc">Automatically tracks plan revisions and shows what changed between submittals, speeding up re-review cycles.</p>
+        </article>
+
+        <article class="feature-card">
+          <div class="feature-card__icon icon-teal" aria-hidden="true">🔗</div>
+          <h3 class="feature-card__title">Permit System Integration</h3>
+          <p class="feature-card__desc">Connects directly to popular permit management platforms via REST API, eliminating double-entry and manual uploads.</p>
+        </article>
+
+        <article class="feature-card">
+          <div class="feature-card__icon icon-red" aria-hidden="true">🛡️</div>
+          <h3 class="feature-card__title">Audit-Ready Records</h3>
+          <p class="feature-card__desc">Every review is timestamped, version-controlled, and stored securely for inspections, appeals, and liability protection.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── How it works ─────────────────────────────────────────────────── -->
+  <section class="how" id="how-it-works" aria-labelledby="how-title">
+    <div class="container">
+      <div class="how__head">
+        <span class="section-label">How it Works</span>
+        <h2 class="section-title" id="how-title">From upload to approval in four steps</h2>
+        <p class="section-sub">Plan-Examiner fits into your existing workflow — no costly process overhaul needed.</p>
+      </div>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step__number">1</div>
+          <h3 class="step__title">Upload Plans</h3>
+          <p class="step__desc">Submit PDF, DWG, or RVT files directly or via your permit portal integration.</p>
+        </div>
+        <div class="step">
+          <div class="step__number">2</div>
+          <h3 class="step__title">AI Analysis</h3>
+          <p class="step__desc">Our engine parses drawings, extracts measurements, and maps elements to code requirements.</p>
+        </div>
+        <div class="step">
+          <div class="step__number">3</div>
+          <h3 class="step__title">Review Report</h3>
+          <p class="step__desc">Receive a structured compliance report with pass/fail items and code citations in minutes.</p>
+        </div>
+        <div class="step">
+          <div class="step__number">4</div>
+          <h3 class="step__title">Approve or Revise</h3>
+          <p class="step__desc">Issue approvals, request corrections, and track resubmittals — all in one place.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Benefits / Comparison ─────────────────────────────────────────── -->
+  <section class="benefits" aria-labelledby="benefits-title">
+    <div class="container benefits__inner">
+      <div>
+        <span class="section-label">Why Plan-Examiner</span>
+        <h2 class="section-title" id="benefits-title">Replace slow manual review with intelligent automation</h2>
+
+        <div class="benefits__list">
+          <div class="benefit">
+            <div class="benefit__icon" aria-hidden="true">⏱️</div>
+            <div>
+              <div class="benefit__title">Reduce review time from days to minutes</div>
+              <div class="benefit__desc">Stop backlogging permit queues. AI completes preliminary checks in under 10 minutes for most project types.</div>
+            </div>
+          </div>
+          <div class="benefit">
+            <div class="benefit__icon" aria-hidden="true">📊</div>
+            <div>
+              <div class="benefit__title">Consistent, repeatable outcomes</div>
+              <div class="benefit__desc">Eliminate reviewer variability. Every plan is measured against the same up-to-date code version every time.</div>
+            </div>
+          </div>
+          <div class="benefit">
+            <div class="benefit__icon" aria-hidden="true">💬</div>
+            <div>
+              <div class="benefit__title">Clear, actionable correction notices</div>
+              <div class="benefit__desc">Auto-generated correction letters cite exact code sections and suggest remediation steps, reducing applicant confusion.</div>
+            </div>
+          </div>
+          <div class="benefit">
+            <div class="benefit__icon" aria-hidden="true">📈</div>
+            <div>
+              <div class="benefit__title">Scale without hiring</div>
+              <div class="benefit__desc">Handle permit volume spikes without adding headcount. Plan-Examiner processes hundreds of submissions concurrently.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="compare-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Capability</th>
+                <th>Manual</th>
+                <th>Plan-Examiner</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Review turnaround</td>
+                <td>3–10 days</td>
+                <td><strong>&lt; 15 min</strong></td>
+              </tr>
+              <tr>
+                <td>Multi-code coverage</td>
+                <td><span class="cross">✗</span></td>
+                <td><span class="tick">✔</span></td>
+              </tr>
+              <tr>
+                <td>Consistent results</td>
+                <td><span class="cross">✗</span></td>
+                <td><span class="tick">✔</span></td>
+              </tr>
+              <tr>
+                <td>Revision tracking</td>
+                <td><span class="cross">✗</span></td>
+                <td><span class="tick">✔</span></td>
+              </tr>
+              <tr>
+                <td>API / integrations</td>
+                <td><span class="cross">✗</span></td>
+                <td><span class="tick">✔</span></td>
+              </tr>
+              <tr>
+                <td>Audit trail</td>
+                <td>Partial</td>
+                <td><span class="tick">✔</span></td>
+              </tr>
+              <tr>
+                <td>Cost per review</td>
+                <td>High</td>
+                <td><strong>Up to 80% less</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Testimonials ──────────────────────────────────────────────────── -->
+  <section class="testimonials" id="testimonials" aria-labelledby="testimonials-title">
+    <div class="container">
+      <div class="testimonials__head">
+        <span class="section-label" style="color:#93c5fd;">Testimonials</span>
+        <h2 class="section-title" id="testimonials-title">Trusted by plan reviewers nationwide</h2>
+        <p class="section-sub">See why municipalities and design firms choose Plan-Examiner to modernize their review process.</p>
+      </div>
+
+      <div class="testi-grid">
+        <div class="testi-card">
+          <div class="testi-card__stars" aria-label="5 out of 5 stars">★★★★★</div>
+          <p class="testi-card__quote">"We cut our average review cycle from 8 days to under 2 hours. Plan-Examiner paid for itself in the first month and our applicants are happier than ever."</p>
+          <div class="testi-card__author">
+            <div class="testi-card__avatar" aria-hidden="true">MR</div>
+            <div>
+              <div class="testi-card__name">Marcus R.</div>
+              <div class="testi-card__role">Chief Building Official, City of Lakeview</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="testi-card">
+          <div class="testi-card__stars" aria-label="5 out of 5 stars">★★★★★</div>
+          <p class="testi-card__quote">"The compliance reports are incredibly detailed. Our architects catch issues during design now instead of after submission — it's transformed our workflow."</p>
+          <div class="testi-card__author">
+            <div class="testi-card__avatar" aria-hidden="true">SP</div>
+            <div>
+              <div class="testi-card__name">Sofia P.</div>
+              <div class="testi-card__role">Principal Architect, Vertex Design Studio</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="testi-card">
+          <div class="testi-card__stars" aria-label="5 out of 5 stars">★★★★★</div>
+          <p class="testi-card__quote">"The API integration with our permit system was seamless. We're now processing 3× the volume with the same team, and our first-pass approval rate jumped by 40%."</p>
+          <div class="testi-card__author">
+            <div class="testi-card__avatar" aria-hidden="true">JK</div>
+            <div>
+              <div class="testi-card__name">Jordan K.</div>
+              <div class="testi-card__role">Director of Permits, Pacific Metro County</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Pricing ───────────────────────────────────────────────────────── -->
+  <section class="pricing" id="pricing" aria-labelledby="pricing-title">
+    <div class="container">
+      <div class="pricing__head">
+        <span class="section-label">Pricing</span>
+        <h2 class="section-title" id="pricing-title">Simple, transparent pricing</h2>
+        <p class="section-sub">Start for free and scale as your permit volume grows. No hidden fees.</p>
+      </div>
+
+      <div class="pricing__grid">
+        <!-- Starter -->
+        <div class="price-card">
+          <div class="price-card__tier">Starter</div>
+          <div class="price-card__price">
+            <span class="price-card__amount">$0</span>
+            <span class="price-card__period">/ month</span>
+          </div>
+          <p class="price-card__desc">Perfect for small firms testing the waters.</p>
+          <hr class="price-card__divider" />
+          <ul class="price-card__features">
+            <li><span class="tick">✔</span> 10 plan reviews / month</li>
+            <li><span class="tick">✔</span> IBC &amp; IRC code sets</li>
+            <li><span class="tick">✔</span> PDF compliance reports</li>
+            <li><span class="tick">✔</span> Email support</li>
+            <li><span class="cross">✗</span> API access</li>
+            <li><span class="cross">✗</span> Custom code amendments</li>
+          </ul>
+          <a href="#cta" class="btn btn-outline price-card__cta">Get Started Free</a>
+        </div>
+
+        <!-- Professional -->
+        <div class="price-card price-card--featured">
+          <div class="price-card__popular">Most Popular</div>
+          <div class="price-card__tier">Professional</div>
+          <div class="price-card__price">
+            <span class="price-card__amount">$299</span>
+            <span class="price-card__period">/ month</span>
+          </div>
+          <p class="price-card__desc">For active design firms and small departments.</p>
+          <hr class="price-card__divider" />
+          <ul class="price-card__features">
+            <li><span class="tick">✔</span> 200 plan reviews / month</li>
+            <li><span class="tick">✔</span> All major code sets + ADA</li>
+            <li><span class="tick">✔</span> Revision tracking</li>
+            <li><span class="tick">✔</span> REST API access</li>
+            <li><span class="tick">✔</span> Priority support</li>
+            <li><span class="cross">✗</span> Custom code amendments</li>
+          </ul>
+          <a href="#cta" class="btn btn-primary price-card__cta">Start Free Trial</a>
+        </div>
+
+        <!-- Enterprise -->
+        <div class="price-card">
+          <div class="price-card__tier">Enterprise</div>
+          <div class="price-card__price">
+            <span class="price-card__amount">Custom</span>
+          </div>
+          <p class="price-card__desc">For municipalities and large engineering firms.</p>
+          <hr class="price-card__divider" />
+          <ul class="price-card__features">
+            <li><span class="tick">✔</span> Unlimited reviews</li>
+            <li><span class="tick">✔</span> Custom code amendments</li>
+            <li><span class="tick">✔</span> Permit system integration</li>
+            <li><span class="tick">✔</span> Dedicated account manager</li>
+            <li><span class="tick">✔</span> SSO &amp; enterprise security</li>
+            <li><span class="tick">✔</span> SLA guarantee</li>
+          </ul>
+          <a href="#cta" class="btn btn-outline price-card__cta">Contact Sales</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── CTA Banner ────────────────────────────────────────────────────── -->
+  <section class="cta-banner" id="cta" aria-labelledby="cta-title">
+    <div class="container">
+      <h2 class="cta-banner__title" id="cta-title">Start reviewing plans smarter today</h2>
+      <p class="cta-banner__sub">Join hundreds of building departments and design professionals already using Plan-Examiner.</p>
+      <div class="cta-banner__actions">
+        <a href="#" class="btn btn-primary">Start Your Free Trial</a>
+        <a href="#" class="btn btn-outline">Schedule a Demo</a>
+      </div>
+      <p class="cta-banner__note">No credit card required &nbsp;·&nbsp; 14-day free trial &nbsp;·&nbsp; Cancel anytime</p>
+    </div>
+  </section>
+
+  <!-- ─── Footer ────────────────────────────────────────────────────────── -->
+  <footer class="footer" aria-label="Site footer">
+    <div class="container">
+      <div class="footer__grid">
+        <div>
+          <div class="footer__brand-name">
+            <svg width="24" height="24" viewBox="0 0 30 30" fill="none" aria-hidden="true">
+              <rect width="30" height="30" rx="8" fill="#1a56db"/>
+              <rect x="7" y="8" width="10" height="2" rx="1" fill="#fff"/>
+              <rect x="7" y="13" width="16" height="2" rx="1" fill="#fff"/>
+              <rect x="7" y="18" width="12" height="2" rx="1" fill="#fff"/>
+              <circle cx="23" cy="21" r="5" fill="#f59e0b"/>
+              <path d="M21 21l1.5 1.5L25 19.5" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Plan-Examiner
+          </div>
+          <p class="footer__tagline">AI-powered building plan review and compliance assistance — faster approvals, fewer revisions, full audit trail.</p>
+        </div>
+
+        <div>
+          <div class="footer__col-title">Product</div>
+          <ul class="footer__links">
+            <li><a href="#features">Features</a></li>
+            <li><a href="#how-it-works">How it Works</a></li>
+            <li><a href="#pricing">Pricing</a></li>
+            <li><a href="#">Changelog</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="footer__col-title">Resources</div>
+          <ul class="footer__links">
+            <li><a href="#">Documentation</a></li>
+            <li><a href="#">API Reference</a></li>
+            <li><a href="#">Code Library</a></li>
+            <li><a href="#">Blog</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="footer__col-title">Company</div>
+          <ul class="footer__links">
+            <li><a href="#">About Us</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Contact</a></li>
+            <li><a href="#">Security</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer__bottom">
+        <span>© 2026 Plan-Examiner. All rights reserved.</span>
+        <div class="footer__legal">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Cookie Policy</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
