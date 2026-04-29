@@ -733,7 +733,11 @@
 </div>
 
 <!-- SCRIPTS -->
+<!-- SRI hashes must be added for production. Compute with:
+     cat mammoth.browser.min.js | openssl dgst -sha384 -binary | openssl base64 -A -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!-- SRI hashes must be added for production. Compute with:
+     cat pdf.min.js | openssl dgst -sha384 -binary | openssl base64 -A -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>if (window.pdfjsLib) { pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'; }</script>
 <script src="assets/js/agent/rule-engine.js"></script>
