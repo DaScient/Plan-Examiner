@@ -69,6 +69,29 @@ Plan-Examiner is an agentic compliance reviewer that checks architectural drawin
 
 ---
 
+## Sample Projects & Local Demos
+
+To test the application's performance and accuracy without using your own private plans, you can use these public-domain sample sets. They are categorized by complexity to help you test different aspects of the agentic pipeline.
+
+| Project Type | Sample Set Name | Key Testing Focus |
+| :--- | :--- | :--- |
+| **Large Scale** | [SRE Expansion (GRR Airport)](https://www.grr.org/hubfs/GFIAA_C378_SRE%20Expansion_Bid%20Set%20Drawings.pdf) | Large-format rendering & MEP schedules |
+| **Industrial** | [Fuel Facility (GRR Airport)](https://www.grr.org/hubfs/GRR%20Fuel%20Facility%20Plans%20-%20Issued%20for%20Bid.pdf) | High-density vector line work |
+| **Commercial** | [Naples Airport Office Building](https://www.flynaples.com/wp-content/uploads/2022-02-28-NAPLES-AOB-CONSTRUCTION-DRAWINGS.pdf) | Interior finishes & Life Safety plans |
+| **Campus** | [UCCS Bid Set](https://pdc.uccs.edu/sites/g/files/kjihxj1346/files/inline-files/2021-0525_UCCS%20BID%20SET%20-%20Drawings.pdf) | Multi-page navigation & site topography |
+| **Standard** | [City of Kirkland Sample Set](https://www.kirklandwa.gov/files/sharedassets/public/v/1/development-services/pdfs/building-pdfs/sample-construction-plan-set.pdf) | Baseline functional testing |
+
+**How to run a demo:**
+1. Download any of the PDFs above.
+2. Open Plan-Examiner (Live or Local).
+3. Drag and drop the file into the **Upload** zone.
+4. Select a **Rule Pack** (e.g., ADA 2010 for the Office Building).
+5. Click **"Start Review"** to trigger the 7-step agent pipeline.
+
+*For more details on these samples, see [TEST_PLANS.md](./TEST_PLANS.md).*
+
+---
+
 ## BYO-Key LLM Setup
 
 Plan-Examiner works **fully offline** without an LLM — the rule engine is deterministic. Add a key to enable:
@@ -81,15 +104,6 @@ Plan-Examiner works **fully offline** without an LLM — the rule engine is dete
 1. Click **AI Settings** in the navigation bar (or press `Ctrl+K → AI Settings`).
 2. Select your provider (OpenAI, Anthropic, Azure OpenAI, or local Ollama).
 3. Paste your API key. It is stored only in your browser's `localStorage` — never transmitted to Plan-Examiner servers.
-
-**Supported providers:**
-
-| Provider | Default Model | Base URL |
-|---|---|---|
-| OpenAI | `gpt-4o-mini` | `https://api.openai.com/v1` |
-| Anthropic | `claude-3-haiku-20240307` | `https://api.anthropic.com` |
-| Azure OpenAI | your deployment | your Azure endpoint |
-| Ollama | `llama3` | `http://localhost:11434/v1` |
 
 ---
 
@@ -107,7 +121,7 @@ The only outbound requests are:
 
 ```bash
 # Clone
-git clone https://github.com/DaScient/Plan-Examiner.git
+git clone [https://github.com/DaScient/Plan-Examiner.git](https://github.com/DaScient/Plan-Examiner.git)
 cd Plan-Examiner
 
 # Serve with any static server (needed for ES module loading)
@@ -115,71 +129,3 @@ npx serve . -p 3000
 # or
 python3 -m http.server 3000
 # then open http://localhost:3000
-```
-
-> **Note:** Opening `index.html` directly from the filesystem (`file://`) will work for basic UI but may block CDN-loaded scripts in strict browsers. Use a local server for full functionality.
-
----
-
-## Project Structure
-
-```
-Plan-Examiner/
-├── index.html                  ← Main application shell
-├── 404.html                    ← GitHub Pages 404
-├── manifest.json               ← PWA manifest
-├── sw.js                       ← Service worker (offline/PWA)
-├── package.json                ← Build tooling (Tailwind CLI)
-├── assets/
-│   ├── css/styles.css          ← Custom styles
-│   ├── js/
-│   │   ├── app.js              ← UI controller
-│   │   ├── agent/
-│   │   │   ├── rule-engine.js  ← Deterministic evaluator
-│   │   │   ├── extractors.js   ← PDF/DXF/DOCX parsers
-│   │   │   ├── pipeline.js     ← 7-step orchestration
-│   │   │   └── llm-bridge.js   ← BYO-key LLM API
-│   │   └── utils/
-│   │       ├── history.js      ← IndexedDB review history
-│   │       └── export.js       ← PDF report + letter export
-│   └── data/rules/
-│       ├── index.json          ← Rule pack registry
-│       ├── ibc-2021.json       ← IBC 2021 rules
-│       ├── ada-2010.json       ← ADA 2010 rules
-│       └── nfpa-101.json       ← NFPA 101 rules
-├── examples/                   ← Sample plan files
-├── .github/
-│   ├── workflows/
-│   │   ├── pages.yml           ← GitHub Pages deploy
-│   │   └── ci.yml              ← CI validation
-│   ├── ISSUE_TEMPLATE/
-│   ├── pull_request_template.md
-│   └── dependabot.yml
-├── CONTRIBUTING.md
-├── CODE_OF_CONDUCT.md
-└── SECURITY.md
-```
-
----
-
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for:
-- How to submit a new rule pack
-- How to add a new document extractor
-- Code style guide
-- PR process
-
----
-
-## License
-
-See [LICENSE](LICENSE) for details.
-
----
-
-## Contact
-
-- **Email:** PlanExaminer@dascient.com  
-- **Phone:** 623-850-0991  
-- **Location:** Glendale, Arizona
