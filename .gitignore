@@ -1,0 +1,24 @@
+# Node
+node_modules/
+npm-debug.log*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Local builds / temp
+dist/
+*.log
+*.tmp
+
+# ── Private / owner-only artifacts ─────────────────────────────────────
+# The `private/` directory is for owner-only notes that must NOT be
+# committed (e.g., the plaintext list of donor emails that map to the
+# hashed entries published in `assets/data/partners.json`).
+# Keep `private/README.md` and `private/.gitkeep` as the only tracked
+# files inside `private/` (see `!` exceptions below).
+private/*
+!private/.gitkeep
+!private/README.md

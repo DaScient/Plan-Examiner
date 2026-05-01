@@ -527,8 +527,8 @@
           <div class="flex items-start gap-3">
             <div class="w-9 h-9 rounded-xl flex items-center justify-center text-sm flex-shrink-0" style="background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.25);color:#34d399;" aria-hidden="true"><i class="fas fa-heart"></i></div>
             <div class="flex-1">
-              <p class="text-xs font-semibold uppercase tracking-wider mb-1" style="color:#34d399;">Support the project</p>
-              <p class="text-xs" style="color:#94a3b8;">Donations are gratefully accepted at <a href="https://Cash.App/$dascient/" target="_blank" rel="noopener noreferrer" style="color:#34d399;font-weight:600;">Cash.App/$dascient</a>.</p>
+              <p class="text-xs font-semibold uppercase tracking-wider mb-1" style="color:#34d399;">Donate for full access</p>
+              <p class="text-xs" style="color:#94a3b8;">Donate at <a href="https://Cash.App/$dascient/" target="_blank" rel="noopener noreferrer" style="color:#34d399;font-weight:600;">Cash.App/$dascient</a> and write your email in the payment note. We&rsquo;ll allow-list that address so you can unlock full access to all features, updates and API documentation from any device.</p>
             </div>
           </div>
         </div>
@@ -750,11 +750,22 @@
         <a href="https://Cash.App/$dascient/" target="_blank" rel="noopener noreferrer" class="glass rounded-xl p-4 flex items-center gap-4 transition-colors" style="text-decoration:none;border:1px solid rgba(52,211,153,.2);">
           <div class="w-10 h-10 rounded-xl flex items-center justify-center text-sm flex-shrink-0" style="background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.25);color:#34d399;" aria-hidden="true"><i class="fas fa-heart"></i></div>
           <div class="flex-1">
-            <div class="text-xs font-semibold uppercase tracking-wider" style="color:#34d399;">Support the project</div>
+            <div class="text-xs font-semibold uppercase tracking-wider" style="color:#34d399;">Donate for full access</div>
             <div class="font-mono text-sm" style="color:#e2e8f0;">Cash.App/$dascient</div>
+            <div class="text-xs mt-1" style="color:#94a3b8;">Note your email in the payment &mdash; we&rsquo;ll allow-list it for full access to features, updates &amp; API docs.</div>
           </div>
           <i class="fas fa-arrow-right text-xs" style="color:#64748b;" aria-hidden="true"></i>
         </a>
+      </div>
+
+      <div class="glass rounded-xl p-4 mb-4" style="border:1px solid rgba(52,211,153,.25);">
+        <label for="partnerGateEmail" class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color:#34d399;">Already donated? Unlock with your email</label>
+        <p class="text-xs mb-3" style="color:#94a3b8;">Enter the email address you wrote in the Cash.App note. It is hashed locally in your browser and checked against our allowlist &mdash; your address is never transmitted.</p>
+        <div class="flex gap-2">
+          <input type="email" id="partnerGateEmail" class="pe-input flex-1" placeholder="you@company.com" autocomplete="email" />
+          <button type="button" onclick="PE.App.unlockByEmail()" class="btn-accent" style="padding:11px 18px;flex-shrink:0;font-size:.8rem;background:linear-gradient(135deg,#34d399,#10b981);">Unlock</button>
+        </div>
+        <p id="partnerGateEmailStatus" class="text-xs mt-2" style="color:#64748b;min-height:1em;" aria-live="polite"></p>
       </div>
 
       <div class="glass rounded-xl p-4 mb-5">

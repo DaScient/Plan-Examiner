@@ -77,6 +77,39 @@ PE.App = (function () {
     return !_isPartner() && _getAnalysisCount() >= FREE_ANALYSIS_LIMIT;
   }
 
+  // SHA-256 hex digest of a normalized email (trimmed, lowercased) used to
+  // check the public partner allowlist without ever transmitting the
+  // plaintext address. Returns null if SubtleCrypto is unavailable.
+  async function _hashEmail(email) {
+    if (!email) return null;
+    var normalized = String(email).trim().toLowerCase();
+    if (!normalized) return null;
+    if (!(window.crypto && window.crypto.subtle && window.TextEncoder)) return null;
+    var data = new TextEncoder().encode(normalized);
+    var buf  = await window.crypto.subtle.digest('SHA-256', data);
+    return Array.from(new Uint8Array(buf), function (b) {
+      return ('00' + b.toString(16)).slice(-2);
+    }).join('');
+  }
+
+  // Fetch the public partner allowlist. Hashed entries only — no
+  // plaintext emails are stored or transmitted.
+  var _partnersCache = null;
+  async function _loadPartners() {
+    if (_partnersCache) return _partnersCache;
+    try {
+      var resp = await fetch('assets/data/partners.json');
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      var json = await resp.json();
+      _partnersCache = (json && Array.isArray(json.hashedEmails))
+        ? json.hashedEmails.map(function (h) { return String(h).toLowerCase(); })
+        : [];
+    } catch (e) {
+      _partnersCache = [];
+    }
+    return _partnersCache;
+  }
+
   // ── Navigation ────────────────────────────────────────────────────────
   function _initNav() {
     // Mobile menu toggle
@@ -824,6 +857,12 @@ PE.App = (function () {
         if (e.key === 'Enter') { e.preventDefault(); activatePartnerKey(); }
       });
     }
+    var emailInput = document.getElementById('partnerGateEmail');
+    if (emailInput) {
+      emailInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') { e.preventDefault(); unlockByEmail(); }
+      });
+    }
     // Subscribe section: partner-key reveal toggle
     var toggle = document.getElementById('partnerKeyToggle');
     var row    = document.getElementById('partnerKeyRow');
@@ -850,8 +889,12 @@ PE.App = (function () {
     document.body.style.overflow = 'hidden';
     var status = document.getElementById('partnerGateStatus');
     if (status) status.textContent = '';
+    var emailStatus = document.getElementById('partnerGateEmailStatus');
+    if (emailStatus) emailStatus.textContent = '';
     var input = document.getElementById('partnerGateKey');
     if (input) input.value = '';
+    var emailInput = document.getElementById('partnerGateEmail');
+    if (emailInput) emailInput.value = '';
   }
 
   function closePartnerGate() {
@@ -872,6 +915,39 @@ PE.App = (function () {
     _setPartner(key);
     if (status) { status.textContent = 'Partner access activated. Thank you!'; status.style.color = '#34d399'; }
     setTimeout(closePartnerGate, 900);
+  }
+
+  // Unlock partner access by checking the donor's email against the
+  // public hashed allowlist (assets/data/partners.json). The plaintext
+  // email is hashed locally and never transmitted.
+  async function unlockByEmail() {
+    var input  = document.getElementById('partnerGateEmail');
+    var status = document.getElementById('partnerGateEmailStatus');
+    var email  = ((input && input.value) || '').trim();
+    function setStatus(msg, color) {
+      if (!status) return;
+      status.textContent = msg;
+      status.style.color = color || '#64748b';
+    }
+    if (!email) { setStatus('Enter the email you used in the Cash.App note.', '#f87171'); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setStatus('Please enter a valid email address.', '#f87171'); return;
+    }
+    setStatus('Checking allowlist…', '#64748b');
+    try {
+      var hash = await _hashEmail(email);
+      if (!hash) { setStatus('This browser does not support secure hashing. Please contact plan-examiner@dascient.com.', '#f87171'); return; }
+      var list = await _loadPartners();
+      if (list.indexOf(hash) !== -1) {
+        _setPartner('email:' + hash.slice(0, 12));
+        setStatus('Welcome, partner! Full access unlocked.', '#34d399');
+        setTimeout(closePartnerGate, 1200);
+      } else {
+        setStatus('We don\u2019t see that email on the allowlist yet. Each donation is reviewed and added manually by the site owner once the Cash.App payment is received \u2014 please allow a little time, then try again. If it has been a while, contact plan-examiner@dascient.com.', '#fbbf24');
+      }
+    } catch (e) {
+      setStatus('Unable to verify right now. Please try again or contact plan-examiner@dascient.com.', '#f87171');
+    }
   }
 
   // ── Service Worker ────────────────────────────────────────────────────
@@ -912,7 +988,8 @@ PE.App = (function () {
     showShortcutsHelp:  showShortcutsHelp,
     openPartnerGate:    openPartnerGate,
     closePartnerGate:   closePartnerGate,
-    activatePartnerKey: activatePartnerKey
+    activatePartnerKey: activatePartnerKey,
+    unlockByEmail:      unlockByEmail
   };
 
 }());

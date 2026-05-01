@@ -1,0 +1,6 @@
+{
+  "_comment": "Partner allowlist — SHA-256 hashes of normalized (trimmed, lowercased) donor emails. Plaintext emails are never stored here. See private/README.md for the workflow.",
+  "version": 1,
+  "updated": "2026-05-01",
+  "hashedEmails": []
+}
