@@ -11,7 +11,8 @@
   "scripts": {
     "build:css": "tailwindcss -i ./assets/css/styles.input.css -o ./assets/css/styles.css --minify",
     "dev:css": "tailwindcss -i ./assets/css/styles.input.css -o ./assets/css/styles.css --watch",
-    "serve": "npx serve . -p 3000"
+    "serve": "npx serve . -p 3000",
+    "test": "node --test tests/"
   },
   "devDependencies": {
     "tailwindcss": "^4.2.4"

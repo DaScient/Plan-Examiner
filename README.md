@@ -129,3 +129,53 @@ npx serve . -p 3000
 # or
 python3 -m http.server 3000
 # then open http://localhost:3000
+```
+
+---
+
+## Verbose / Debug Mode
+
+Plan-Examiner ships with a built-in diagnostic logger (`PE.Log`) that records every stage of the document scanner so you can answer questions like *"why did this rule end up REVIEW instead of FLAGGED?"* or *"did my file actually get ingested?"*
+
+### Turning it on
+
+| Method | Persistence |
+| --- | --- |
+| Add `?verbose=1` to the URL | Persists in `localStorage` (toggle off with `?verbose=0`) |
+| `localStorage.setItem('pe.verbose', '1')` in DevTools | Persists across reloads |
+| Tick the **Enable verbose logging** checkbox in the modal's *Verbose Log* panel | Persists across reloads |
+
+When verbose mode is active the **Verbose Log** panel under the Pipeline tab auto-opens and streams entries live.
+
+### What gets logged
+
+| Stage | Sample entries |
+| --- | --- |
+| `extract` | `Ingest start: plans.pdf (834,221 bytes)` with `{ sha256, mimeType, lastModified }`; per-regex hits like `fact extracted: corridorWidthInches = 44` with the matched snippet; OCR progress `OCR recognizing 42%`; warnings for image-only PDFs and unsupported file types |
+| `pipeline` | Per-step `running` / `done` with `{ durationMs, ... }`; pack list, rule counts, applied placeholders |
+| `rule-engine` | `rule ibc-2021/IBC-1005.1 → PASS` with `{ status, note, factsUsed }`; explicit skip reasons (`applies_to mismatch`, `applies_when=false`, `disabled`); aggregate `evaluation complete` summary |
+| `llm` | `request → openai (gpt-4o-mini)` and `response ← openai in 1820ms (1432 chars)` — provider, model, prompt/response sizes, latency. **API keys are never logged.** |
+
+### Saving the log for bug reports
+
+The Verbose Log panel has three buttons:
+
+- **Copy** — copies the entire ring buffer to the clipboard as plain text.
+- **Download .log** — saves the buffer as a `plan-examiner-<timestamp>.log` file. Attach this to GitHub issues for fast triage.
+- **Clear** — empties the ring buffer (the next pipeline run will start fresh).
+
+The ring buffer holds up to 1000 entries. Errors and warnings are recorded even when verbose mode is off, so a bug report log will always include the failure context.
+
+### File integrity
+
+Both the **Preview** tab and the verbose panel display the file's `SHA-256`, byte size, MIME type, and last-modified timestamp so you can verify the right file was ingested. The same metadata is included in the JSON export.
+
+---
+
+## Tests
+
+```bash
+npm test           # runs node --test against tests/
+```
+
+Covers `Extractors.parse`, `Extractors.fromDxf`, `RuleEngine.evaluate`, and `Pipeline.run` with fixture-based and mocked inputs. The same suite runs in CI on every PR (see `.github/workflows/ci.yml`).

@@ -47,3 +47,44 @@ When using these plans, focus on the following performance and functional metric
 
 ## How to Add More
 To contribute additional test plans, please ensure the links are persistent and the documents are in the public domain or approved for redistributable testing use. Update this list via a Pull Request.
+
+---
+
+## Automated Coverage (`npm test`)
+
+The `tests/` folder contains Node-runnable unit tests (`node --test`, no framework dep) that exercise the scanner end-to-end without a browser:
+
+| File | What it covers |
+| :--- | :--- |
+| `tests/extractors.parse.test.js` | Every fact-extraction regex (area, occupant load, stair geometry, corridor/door widths, building height, fire separation, sprinkler/handrail flags). |
+| `tests/extractors.dxf.test.js`   | `fromDxf()` against `tests/fixtures/sample.dxf` — TEXT entity parsing, layer detection, LINE-based dimensional inference, malformed-input safety. |
+| `tests/rule-engine.test.js`      | `evaluate()` with a synthetic rule pack — PASS / REVIEW / FLAGGED outcomes, `applies_to` / `disabled` skipping, `score()` weighting. |
+| `tests/pipeline.test.js`         | `Pipeline.run()` step ordering and event emission with mocked `Extractors.extract` and `fetch`; covers happy-path, extractor error, and unsupported-file short-circuit. |
+
+CI runs the full suite on every PR via `.github/workflows/ci.yml` (job: **Unit Tests**). All assertions must pass before merging.
+
+---
+
+## Manual Verification — Verbose Log Checklist
+
+For each sample PDF in the list above, perform the following walk-through with `?verbose=1` enabled. The Verbose Log panel under the *Pipeline* tab should show each item.
+
+1. **Ingest stage**
+   - [ ] `extract` log shows `Ingest start: <filename>` with `sha256`, `mimeType`, `lastModified`, and `sizeBytes` matching the file on disk.
+   - [ ] `Sample of extracted text (first 500 chars)` entry contains recognizable strings from the plan title block.
+   - [ ] For an image-only / scanned PDF, a `warn` entry with `image-only-pdf` appears and the warning is shown in the Preview tab.
+   - [ ] For an unknown file extension, an `error` entry is recorded and the pipeline halts at *Ingest*.
+2. **Per-fact extraction**
+   - [ ] At least one `fact extracted: <factName> = <value>` debug entry per major dimension visible on the plan (occupant load, gross area, corridor width, etc.) with a matching `snippet` field showing the source text.
+3. **Rule evaluation**
+   - [ ] `rule <pack>/<rule_id> → PASS|REVIEW|FLAGGED` debug entries appear for each evaluated rule.
+   - [ ] Skipped rules show explicit reason (`applies_to mismatch`, `applies_when=false`, `disabled`).
+   - [ ] Aggregate `evaluation complete` info entry summarises totals.
+4. **Coverage report**
+   - [ ] Analysis tab includes the **Rule Coverage** disclosure with the count of present vs missing evidence keys.
+5. **LLM (only when configured)**
+   - [ ] `llm` `request →` and `response ←` entries record provider, model, prompt/response sizes, and latency.
+   - [ ] **API key never appears** in any log entry (verify by searching the downloaded `.log` file).
+6. **Export**
+   - [ ] Click **Download .log** — file downloads as `plan-examiner-<timestamp>.log`.
+   - [ ] JSON export includes `file.sha256`, `coverage`, and `placeholders` sections.

@@ -1,0 +1,74 @@
+  0
+SECTION
+  2
+ENTITIES
+  0
+TEXT
+  8
+A-DOOR
+  1
+DOOR WIDTH: 36 in
+  0
+TEXT
+  8
+A-CORR
+  1
+CORRIDOR WIDTH: 48 in
+  0
+TEXT
+  8
+A-EGRESS
+  1
+OCCUPANT LOAD: 120
+  0
+LINE
+  8
+A-WALL
+ 10
+0.0
+ 20
+0.0
+ 11
+36.0
+ 21
+0.0
+  0
+LINE
+  8
+A-WALL
+ 10
+0.0
+ 20
+0.0
+ 11
+44.0
+ 21
+0.0
+  0
+LINE
+  8
+SPRINKLER
+ 10
+0.0
+ 20
+0.0
+ 11
+1.0
+ 21
+0.0
+  0
+LINE
+  8
+A-EXIT-SIGN
+ 10
+0.0
+ 20
+0.0
+ 11
+1.0
+ 21
+0.0
+  0
+ENDSEC
+  0
+EOF
