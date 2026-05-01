@@ -284,6 +284,11 @@ PE.Extractors = (function () {
     return merged;
   }
 
+  // Centralized list of supported file extensions (kept in one place so
+  // the regex dispatch and the error message can never drift apart).
+  var SUPPORTED_EXTS = ['.pdf', '.docx', '.dxf', '.dwg', '.png', '.jpg', '.jpeg', '.tiff', '.tif', '.bmp', '.webp'];
+  var IMAGE_EXT_RE   = /\.(png|jpe?g|tiff?|bmp|webp)$/;
+
   // ── Main entry point ─────────────────────────────────────────────────
   /**
    * Extract facts from `file`.
@@ -317,11 +322,11 @@ PE.Extractors = (function () {
       else if (name.endsWith('.pdf'))                   raw = await fromPdf(buf);
       else if (name.endsWith('.dxf'))                   raw = fromDxf(new TextDecoder().decode(buf));
       else if (name.endsWith('.dwg'))                   raw = { text: '', facts: {}, source: 'dwg', unsupported: true };
-      else if (/\.(png|jpe?g|tiff?|bmp|webp)$/.test(name)) raw = await fromImage(file, onProgress);
+      else if (IMAGE_EXT_RE.test(name)) raw = await fromImage(file, onProgress);
       else {
         // Unknown extension — surface as an explicit error rather than
         // silently producing empty facts (which yields a misleading score).
-        var msg = 'Unsupported file type "' + (ext || '(no extension)') + '". Supported: .pdf, .docx, .dxf, .dwg, .png, .jpg, .jpeg, .tiff, .bmp, .webp.';
+        var msg = 'Unsupported file type "' + (ext || '(no extension)') + '". Supported: ' + SUPPORTED_EXTS.join(', ') + '.';
         _log('error', msg, meta);
         raw = { text: '', facts: {}, source: 'unknown', unsupported: true, unsupportedReason: msg };
       }
