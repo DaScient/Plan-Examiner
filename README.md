@@ -2,9 +2,9 @@
 
 > **AI-powered building plan review and code compliance — runs entirely in your browser.**
 
-[![Deploy to GitHub Pages](https://github.com/DaScient/Plan-Examiner/actions/workflows/pages.yml/badge.svg)](https://github.com/DaScient/Plan-Examiner/actions/workflows/pages.yml)
-[![CI](https://github.com/DaScient/Plan-Examiner/actions/workflows/ci.yml/badge.svg)](https://github.com/DaScient/Plan-Examiner/actions/workflows/ci.yml)
-[![License](https://img.shields.io/github/license/DaScient/Plan-Examiner)](LICENSE)
+[![Deploy to GitHub Pages](https://github.com/DaScient/Plan-Examiner/actions/workflows/pages.yml/badge.svg)](https://github.com/DaScient-Intelligence/Plan-Examiner/actions/workflows/pages.yml)
+[![CI](https://github.com/DaScient-Intelligence/Plan-Examiner/actions/workflows/ci.yml/badge.svg)](https://github.com/DaScient/Plan-Examiner/actions/workflows/ci.yml)
+[![License](https://img.shields.io/github/license/DaScient-Intelligence/Plan-Examiner)](LICENSE)
 
 **[🔗 Live Demo →](https://dascient-intelligence.github.io/Plan-Examiner)**
 
@@ -121,7 +121,7 @@ The only outbound requests are:
 
 ```bash
 # Clone
-git clone [https://github.com/DaScient/Plan-Examiner.git](https://github.com/DaScient/Plan-Examiner.git)
+git clone [https://github.com/DaScient-Intelligence/Plan-Examiner.git](https://github.com/DaScient-Intelligence/Plan-Examiner.git)
 cd Plan-Examiner
 
 # Serve with any static server (needed for ES module loading)
