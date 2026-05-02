@@ -16,7 +16,7 @@ run. Read it out loud once before going live.
 ⏱ **3 min, the night before**
 
 - [ ] Open [the live site](https://dascient-intelligence.github.io/Plan-Examiner) in an incognito window so caches don't surprise you.
-- [ ] Download one [public sample plan set](../../../README.md#sample-projects--local-demos) — the **City of Kirkland Sample Set** is the safest baseline.
+- [ ] Download one [public sample plan set](../../../TEST_PLANS.md) — the **City of Kirkland Sample Set** is the safest baseline.
 - [ ] Decide: **text-only** demo, or **vision** demo? (Vision is more impressive but requires a configured key with a vision-capable model. Default to text-only unless you've rehearsed vision.)
 - [ ] If vision: confirm capability badge shows ✅ in **AI Settings**.
 - [ ] Close other tabs. The verbose log gets noisy.
